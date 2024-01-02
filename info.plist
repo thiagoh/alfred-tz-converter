@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>thiagoh.timezones</string>
+	<string>thiagoh.alfred-tz-converter</string>
 	<key>connections</key>
 	<dict>
 		<key>16D7BCC0-AD0A-49B7-98F2-5FC3444910B1</key>
