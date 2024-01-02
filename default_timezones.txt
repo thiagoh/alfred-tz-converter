@@ -1,0 +1,8 @@
+#Version2.0
+Chennai|India|Asia/Kolkata|IN||1
+London|United Kingdom|Europe/London|GB|44|1
+New York|United States|America/New_York|US|1|1
+Recife|Brazil|America/Recife|BR||1Chennai|India|Asia/Kolkata|IN||1
+Seattle|United States|America/Los_Angeles|US||1
+Toronto|Canada|America/Toronto|CA||1
+Vancouver|Canada|America/Vancouver|CA||1
