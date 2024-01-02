@@ -1058,7 +1058,7 @@ CHANGELOG
 
 All issues tracked on GitHub https://github.com/thiagoh/timezone-converter/issues
 
-v1.0  
+v1.0
 2 Jan 2024
 
 * Initial release</string>
@@ -1271,7 +1271,7 @@ v1.0
 	<key>variablesdontexport</key>
 	<array/>
 	<key>version</key>
-	<string>1.0</string>
+	<string>1.0.0</string>
 	<key>webaddress</key>
 	<string></string>
 </dict>
