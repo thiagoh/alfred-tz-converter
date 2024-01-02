@@ -1,0 +1,13 @@
+{
+  "alfredworkflow" : {
+    "category" : "",
+    "readme" : "Timezone Converter\n2 January 2024\n\n=====\nUSAGE\n=====\n\nKeyword: tz (or hotkey) - bring up the list of saved cities with their respective current times. (Keep typing the name of a place for a one-off lookup.)\n\nKeyword: tz <time> - where <time> can be in the 12H or 24H format. Examples: 1PM, 2AM, 13:00, 09:00 PM, 11:00:00AM, 14:00, etc.\n - convert provided time into time of your cities.\n\nKeyword: tz <part of city name> - searches for a city in your cities that matches that name and shows the current time.\n\nKeyword: tz <time> - where <time> can be in the 12H or 24H format. Examples: 1PM, 2AM, 13:00, 09:00 PM, 11:00:00AM, 14:00, etc.\n\nKeyword: tz <source city> <time> - where <time> can be in the 12H or 24H format. Examples: 1PM, 2AM, 13:00, 09:00 PM, 11:00:00AM, 14:00, etc. and <source city> is used to search in your city list\n\nKeyword: timezone add [your city] - add your city to the list. (To remove a city, option-select it from the main list.)\n\nKeyword: timezone edit - open for edit of cities file.\n\nKeyword: timezone move - move the saved cities file (timezones.txt) to a location of your choice (so you can sync it in your Dropbox or whatever you want).\n\nKeyword: timezone 12h, timezone 24h - change format of displayed time.\n\n=======\nCREDITS\n=======\n\nGeoIP2 City and Country CSV Databases: https:\/\/dev.maxmind.com\/geoip\/geoip2\/geoip2-city-country-csv-databases\/\n\nFlag icons from: http:\/\/www.free-country-flags.com\n(Creative Commons Attribution-ShareAlike 3.0 Unported License.)\n\nIcon design by Logo Open Stock (modified from original) http:\/\/www.logoopenstock.com\n\nOneUpdater https:\/\/github.com\/vitorgalvao\/alfred-workflows\/tree\/master\/OneUpdater\n\n\n=========\nCHANGELOG\n=========\n\nAll issues tracked on GitHub https:\/\/github.com\/thiagoh\/timezone-converter\/issues\n\nv1.0\n2 Jan 2024\n\n* Initial release",
+    "createdby" : "Thiago Andrade @thiagoh",
+    "downloadurl" : "",
+    "version" : "1.0.0",
+    "bundleid" : "thiagoh.alfred-tz-converter",
+    "description" : "A Timezone Converter for Alfred",
+    "name" : "Timezone Converter",
+    "webaddress" : ""
+  }
+}
