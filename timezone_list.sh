@@ -351,7 +351,7 @@ while IFS='|' read -r city country timezone country_code telephone_code favourit
 
     timezone_to_convert_offset=$(TZ=$timezone_to_convert date +"%z")
     current_timezone_offset=$(TZ=$timezone date +"%z")
-    echo "Current timezone: $timezone / Offset: $current_timezone_offset " >> /tmp/alfred.txt
+    # echo "Current timezone: $timezone / Offset: $current_timezone_offset " >> /tmp/alfred.txt
 
     if [ "$timezone" = "$timezone_to_convert" ] ; then
         sourceTimezone_string="👉 "

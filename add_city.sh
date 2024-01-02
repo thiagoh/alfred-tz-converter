@@ -2,8 +2,6 @@ source includes.sh
 
 city_definition="${1}"
 
-  echo "# city_definition: ${city_definition}" >> /tmp/alfred.txt
-
 	country=$(echo "$city_definition" | awk -F'|' '{ print $1 } ')
 	country_code=$(echo "$city_definition" | awk -F'|' '{ print $2 } ')
 	city=$(echo "$city_definition" | awk -F'|' '{ print $3 } ')
