@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-function migratePreferece() {
-	LEGACY_TZPREFS="$HOME/Library/Application Support/Alfred 3/Workflow Data/carlosnz.timezones"
-	[[ ! -d  "$TZPREFS" ]] && mkdir -p "$TZPREFS" 2>/dev/null
-	[[ ! -e "$timezone_file" ]] && cp "$LEGACY_TZPREFS/"* "$TZPREFS/" 2>/dev/null
-	[[ -e "$TZPREFS/config-1-5" ]] && rm "$TZPREFS/config-1-5" 2>/dev/null
-}
-
 function storePreference() {
    NAME="$1"
    VALUE="$2"
@@ -45,8 +38,6 @@ shopt -s expand_aliases
 
 #Case-insensitive matching
 shopt -s nocasematch
-
-migratePreferece
 
 #Does the file actually exist?
 if [ ! -e "$timezone_file" ]; then

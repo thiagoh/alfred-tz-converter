@@ -30,10 +30,22 @@ comp1=$(echo "$search" | awk -F'[[:space:]]+' '{print $1}')
 comp2=$(echo "$search" | awk -F'[[:space:]]+' '{print $2}')
 comp3=$(echo "$search" | awk -F'[[:space:]]+' '{print $3}')
 
-echo "## search: ${search}"  >> /tmp/alfred.txt
-echo "## comp1:  ${comp1}"   >> /tmp/alfred.txt
-echo "## comp2:  ${comp2}"   >> /tmp/alfred.txt
-echo "## comp3:  ${comp3}"   >> /tmp/alfred.txt
+echo "# search: ${search}"  >> /tmp/alfred.txt
+echo "# comp1 / comp2 / comp3: ${comp1} / ${comp2} / ${comp3}"   >> /tmp/alfred.txt
+
+if [[ "$comp1" =~ ^([01]?[0-9]|2[0-3])(:[0-5][0-9](:[0-5][0-9])?)?(([pP]|[aA])[mM])?$ ]]; then
+  comp1_is_time=1
+else
+  comp1_is_time=0
+fi
+
+if [[ "$comp2" =~ ^([01]?[0-9]|2[0-3])(:[0-5][0-9](:[0-5][0-9])?)?(([pP]|[aA])[mM])?$ ]]; then
+  comp2_is_time=1
+else
+  comp2_is_time=0
+fi
+echo "# comp1 is time: ${comp1_is_time}" >> /tmp/alfred.txt
+echo "# comp2 is time: ${comp2_is_time}" >> /tmp/alfred.txt
 
 timestamp_component=$(echo "$search" | awk -F'[[:space:]]+' '{print $1}')
 timestamp_component=$(echo $timestamp_component | awk '{printf "%.0f\n", $1}')
@@ -82,7 +94,24 @@ else
     echo "Not a timestamp. Trying out something else" >> /tmp/alfred.txt
 fi
 
+
+if [ -n "$comp3" ] && [ $comp2_is_time -eq 1 ]; then
+  # string is like "Recife 01:00:00 PM"
+  echo "<City> <Time> [AM/PM descriptor]" >> /tmp/alfred.txt
+
+  # convert <City> <Time> [AM/PM descriptor] to <City> <Time>[AM/PM descriptor]
+  if [[ "$comp3" =~ ^([aA]|[pP])[mM]$ ]] ; then
+    comp2=$comp2$comp3
+    comp3=""
+  fi
+fi
+
 if [ -n "$comp2" ]; then
+  if [ $comp2_is_time -eq 1 ] ; then
+
+    # string is like "Recife 01:00:00PM"
+    echo "<City> <Time>[AM/PM descriptor]" >> /tmp/alfred.txt
+
     source_timezone_search=$comp1
     date_modification_search='t'
     time_search=$comp2
@@ -104,35 +133,95 @@ if [ -n "$comp2" ]; then
 
     echo "set_to_pm: $set_to_pm" >> /tmp/alfred.txt
 
-else
-    if [[ "$comp1" =~ ^[0-9]+ ]]; then
-        time_search=$comp1
-    else
-        city_search=$comp1
+  elif [ $comp1_is_time -eq 1 ] ; then
+
+    # string is like "01:00:00 PM"
+
+    echo "<Time> [AM/PM descriptor]" >> /tmp/alfred.txt
+
+    source_timezone_search=''
+    date_modification_search='t'
+    time_search=$comp1
+
+    # set flat to PM to true if hour is in format "1AM"
+    if [[ "$comp2" =~ ^[pP][mM]$ ]] ; then
+      set_to_pm=1
     fi
+
+    # remove last two digits (AM|PM)
+    if [[ "$comp2" =~ ^.+([pP]|[aA])[mM]$ ]] ; then
+      time_search=$(echo "$time_search" | rev | cut -c 3- | rev)
+    fi
+
+    # set flat to PM to true if hour is in format "1 AM"
+    if [[ "$comp3" =~ ^[pP][mM]$ ]] ; then
+      set_to_pm=1
+    fi
+
+    echo "set_to_pm: $set_to_pm" >> /tmp/alfred.txt
+
+  else
+
+    echo "Unknown entry: $search" >> /tmp/alfred.txt
+
+  fi
+
+elif [ -n "$comp1" ] && [ $comp1_is_time -eq 1 ]; then
+
+  # string is like "01:00:00PM"
+
+  echo "<Time>[AM/PM descriptor]" >> /tmp/alfred.txt
+
+  source_timezone_search=''
+  date_modification_search='t'
+  time_search=$comp1
+
+  # set flat to PM to true if hour is in format "1PM"
+  if [[ "$time_search" =~ ^.+[pP][mM]$ ]] ; then
+    set_to_pm=1
+  fi
+
+  # remove last two digits (AM|PM)
+  if [[ "$time_search" =~ ^.+([pP]|[aA])[mM]$ ]] ; then
+    time_search=$(echo "$time_search" | rev | cut -c 3- | rev)
+  fi
+
+  echo "Time in available timezones: $time_search" >> /tmp/alfred.txt
+  echo "set_to_pm: $set_to_pm" >> /tmp/alfred.txt
+
+else
+
+  if [[ "$comp1" =~ ^[[:alpha:]]+$ ]]; then
+    # string is like "Recife 01:00:00PM"
+    echo "<City>" >> /tmp/alfred.txt
+    city_search=$comp1
+  else
+    echo "Unknown entry: $search" >> /tmp/alfred.txt
+    exit
+  fi
 fi
 
-echo "## source_timezone_search: ${source_timezone_search}" >> /tmp/alfred.txt
-echo "## date_modification_search: ${date_modification_search}" >> /tmp/alfred.txt
-echo "## time_search: ${time_search}" >> /tmp/alfred.txt
+echo "# source_timezone_search: ${source_timezone_search}" >> /tmp/alfred.txt
+echo "# date_modification_search: ${date_modification_search}" >> /tmp/alfred.txt
+echo "# time_search: ${time_search}" >> /tmp/alfred.txt
 
 #
 # create source timezone
 #
-if [ -n "$source_timezone_search" ]
-then
-    #timezoneToConvert=$(find /usr/share/zoneinfo.default -iname "*${source_timezone_search}*" | head -1 )
-    #timezoneToConvert=${timezoneToConvert:28}
-    timezoneToConvert=$(cat "$timezone_file" | awk -v query="$source_timezone_search" -F'|' 'tolower($1) ~ tolower(query) {print $3}' )
-    if [ -n "$timezoneToConvert" ]
-    then
-        timezoneOffsetToConvert=$(TZ=$timezoneToConvert date +%z)
+if [ -n "$source_timezone_search" ]; then
+    timezone_to_convert=$(cat "$timezone_file" | awk -v query="$source_timezone_search" -F'|' 'tolower($1) ~ tolower(query) {print $3}' )
+    if [ -n "$timezone_to_convert" ]; then
+        timezone_offset_to_convert=$(TZ=$timezone_to_convert date +%z)
     fi
 fi
-if [ -z "$timezoneOffsetToConvert" ]
-then
-    timezoneOffsetToConvert=$(date +%z)
+
+if [ -z "$timezone_offset_to_convert" ]; then
+    timezone_offset_to_convert=$(date +%z)
+    timezone_to_convert=$(date +%Z)
 fi
+
+echo "# timezone_offset: ${timezone_offset_to_convert}" >> /tmp/alfred.txt
+echo "# timezone: ${timezone_to_convert}" >> /tmp/alfred.txt
 
 #
 # create source date
@@ -206,7 +295,7 @@ if [[ $time_search =~ ^[0-9:]+$ ]] ; then
     echo "hour: $hour" >> /tmp/alfred.txt
 
     if [ $hour -le 12 ] && [ $set_to_pm -eq 1 ]; then
-      hour=$(($hour + 12))
+      hour=$((($hour + 12) % 24))
       echo "new hour: $hour" >> /tmp/alfred.txt
       time_search=$hour:${time_search:3}
     fi
@@ -260,24 +349,27 @@ while IFS='|' read -r city country timezone country_code telephone_code favourit
         favourite_string=""
     fi
 
-    if [ "$timezone" = "$timezoneToConvert" ]
-    then
+    timezone_to_convert_offset=$(TZ=$timezone_to_convert date +"%z")
+    current_timezone_offset=$(TZ=$timezone date +"%z")
+    echo "Current timezone: $timezone / Offset: $current_timezone_offset " >> /tmp/alfred.txt
+
+    if [ "$timezone" = "$timezone_to_convert" ] ; then
         sourceTimezone_string="👉 "
+    elif [ "$timezone_to_convert_offset" = "$current_timezone_offset" ] ; then
+        sourceTimezone_string="🎯 "
     else
         sourceTimezone_string=""
     fi
 
-    setTimeOptionArguments="-jf %Y%m%d%H%M%S%z $dateToConvert$timeToConvert$timezoneOffsetToConvert"
+    setTimeOptionArguments="-jf %Y%m%d%H%M%S%z $dateToConvert$timeToConvert$timezone_offset_to_convert"
 
     # UTC hours needs swap the sign (minus)->(plus) and vice-versa
     timezoneOpposite="$timezone"
 
-    if [[ "$timezone" == *UTC-* ]]
-    then
+    if [[ "$timezone" == *UTC-* ]]; then
         timezoneOpposite="${timezone/-/+}"
-    elif [[ "$timezone" == *UTC+* ]]
-    then
-            timezoneOpposite="${timezone/+/-}"
+    elif [[ "$timezone" == *UTC+* ]]; then
+        timezoneOpposite="${timezone/+/-}"
     fi
 
     city_time=$(TZ=$timezoneOpposite date $setTimeOptionArguments +"$TIME_FORMAT_STR")
