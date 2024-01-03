@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 source includes.sh
 
 search="$1"	#Alfred argument
