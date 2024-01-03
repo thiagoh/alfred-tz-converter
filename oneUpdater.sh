@@ -3,8 +3,8 @@
 set -x
 
 # THESE VARIABLES MUST BE SET. SEE THE ONEUPDATER README FOR AN EXPLANATION OF EACH.
-readonly remote_info_plist='https://raw.githubusercontent.com/thiagoh/alfred-tz-converter/master/source/info.plist'
-readonly workflow_url='https://github.com/thiagoh/alfred-tz-converter/raw/master/TimeZones.alfredworkflow'
+readonly remote_info_plist='https://raw.githubusercontent.com/thiagoh/alfred-tz-converter/main/info.plist'
+readonly workflow_url='https://github.com/thiagoh/alfred-tz-converter/raw/main/alfred-tz-converter.alfredworkflow'
 readonly download_type='direct'
 readonly frequency_check="${1:-7}"
 
@@ -30,15 +30,17 @@ function notification {
 }
 
 # Local sanity checks
-readonly local_info_plist='info.plist'
-readonly local_version="$(/usr/libexec/PlistBuddy -c 'print version' "${local_info_plist}")"
+readonly local_metadata_json='metadata.json'
+readonly local_version=$(osascript -l JavaScript -e 'function run(argv) { return JSON.parse(argv).alfredworkflow.version; }' "$(cat metadata.json)")
+echo "local_version: $local_version" >> /tmp/alfred.txt
+# readonly local_version="$(/usr/libexec/PlistBuddy -c 'print version' "${local_metadata_json}")"
 
 [[ -n "${local_version}" ]] || abort 'You need to set a workflow version in the configuration sheet.'
 [[ "${download_type}" =~ ^(direct|page|github_release)$ ]] || abort "'download_type' (${download_type}) needs to be one of 'direct', 'page', or 'github_release'."
 [[ "${frequency_check}" =~ ^[0-9]+$ ]] || abort "'frequency_check' (${frequency_check}) needs to be a number."
 
 # Check for updates
-if [[ $(find "${local_info_plist}" -mtime +"${frequency_check}"d) ]]; then
+if [[ $(find "${local_metadata_json}" -mtime +"${frequency_check}"d) ]]; then
   # Remote sanity check
   if ! url_exists "${remote_info_plist}"; then
     abort "'remote_info_plist' (${remote_info_plist}) appears to not be reachable."
@@ -50,7 +52,7 @@ if [[ $(find "${local_info_plist}" -mtime +"${frequency_check}"d) ]]; then
   rm "${tmp_file}"
 
   if [[ "${local_version}" == "${remote_version}" ]]; then
-    touch "${local_info_plist}" # Reset timer by touching local file
+    touch "${local_metadata_json}" # Reset timer by touching local file
     exit 0
   fi
 
