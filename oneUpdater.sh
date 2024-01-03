@@ -3,7 +3,7 @@
 set -x
 
 # THESE VARIABLES MUST BE SET. SEE THE ONEUPDATER README FOR AN EXPLANATION OF EACH.
-readonly remote_info_plist='https://raw.githubusercontent.com/thiagoh/alfred-tz-converter/main/info.plist'
+readonly remote_metadata_json='https://raw.githubusercontent.com/thiagoh/alfred-tz-converter/main/metadata.json'
 readonly workflow_url='https://github.com/thiagoh/alfred-tz-converter/raw/main/alfred-tz-converter.alfredworkflow'
 readonly download_type='direct'
 readonly frequency_check="${1:-7}"
@@ -42,13 +42,13 @@ echo "local_version: $local_version" >> /tmp/alfred.txt
 # Check for updates
 if [[ $(find "${local_metadata_json}" -mtime +"${frequency_check}"d) ]]; then
   # Remote sanity check
-  if ! url_exists "${remote_info_plist}"; then
-    abort "'remote_info_plist' (${remote_info_plist}) appears to not be reachable."
+  if ! url_exists "${remote_metadata_json}"; then
+    abort "'remote_metadata_json' (${remote_metadata_json}) appears to not be reachable."
   fi
 
   readonly tmp_file="$(mktemp)"
-  curl --silent --location --output "${tmp_file}" "${remote_info_plist}"
-  readonly remote_version="$(/usr/libexec/PlistBuddy -c 'print version' "${tmp_file}")"
+  curl --silent --location --output "${tmp_file}" "${remote_metadata_json}"
+  readonly remote_version=$(osascript -l JavaScript -e 'function run(argv) { return JSON.parse(argv).alfredworkflow.version; }' "$(cat metadata.json)")
   rm "${tmp_file}"
 
   if [[ "${local_version}" == "${remote_version}" ]]; then
