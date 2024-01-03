@@ -48,12 +48,16 @@ if [[ $(find "${local_metadata_json}" -mtime +"${frequency_check}"d) ]]; then
 
   readonly tmp_file="$(mktemp)"
   curl --silent --location --output "${tmp_file}" "${remote_metadata_json}"
-  readonly remote_version=$(osascript -l JavaScript -e 'function run(argv) { return JSON.parse(argv).alfredworkflow.version; }' "$(cat metadata.json)")
+  readonly remote_version=$(osascript -l JavaScript -e 'function run(argv) { return JSON.parse(argv).alfredworkflow.version; }' "$(cat $tmp_file)")
+  echo "remote_version: $remote_version" >> /tmp/alfred.txt
   rm "${tmp_file}"
 
   if [[ "${local_version}" == "${remote_version}" ]]; then
+    echo "Version is up to date" >> /tmp/alfred.txt
     touch "${local_metadata_json}" # Reset timer by touching local file
     exit 0
+  else
+    echo "Workflow needs to be updated to $remote_version" >> /tmp/alfred.txt
   fi
 
   if [[ "${download_type}" == 'page' ]]; then
