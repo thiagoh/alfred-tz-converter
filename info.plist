@@ -278,13 +278,16 @@
 				<key>vitoclose</key>
 				<false/>
 			</dict>
+		</array>
+		<key>F4B43EF6-E32D-4988-A7B3-8CC64CC701BA</key>
+		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>9740FE97-5B7D-4D30-9EF3-5D845C5CA7DC</string>
+				<string>942CCE71-9883-4AB2-A558-B5A44993DF3B</string>
 				<key>modifiers</key>
-				<integer>1048576</integer>
+				<integer>0</integer>
 				<key>modifiersubtext</key>
-				<string>Toggle Favourite flag for this city</string>
+				<string></string>
 				<key>vitoclose</key>
 				<false/>
 			</dict>
@@ -365,27 +368,6 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>lastpathcomponent</key>
-				<false/>
-				<key>onlyshowifquerypopulated</key>
-				<true/>
-				<key>removeextension</key>
-				<false/>
-				<key>text</key>
-				<string>{query}</string>
-				<key>title</key>
-				<string>Time copied to clipboard!</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.notification</string>
-			<key>uid</key>
-			<string>E9C3767A-C20A-4934-BB66-83416A567C96</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>action</key>
 				<integer>0</integer>
 				<key>argument</key>
@@ -415,6 +397,73 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>echo -n "{query}"</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>942CCE71-9883-4AB2-A558-B5A44993DF3B</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>./convert_to_unix_timestamp.sh "{query}"</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>F4B43EF6-E32D-4988-A7B3-8CC64CC701BA</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>removeextension</key>
+				<false/>
+				<key>text</key>
+				<string>{query}</string>
+				<key>title</key>
+				<string>Time copied to clipboard!</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>E9C3767A-C20A-4934-BB66-83416A567C96</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>autopaste</key>
 				<false/>
 				<key>clipboardtext</key>
@@ -439,7 +488,7 @@
 				<key>escaping</key>
 				<integer>0</integer>
 				<key>script</key>
-				<string>echo -n "{query}"</string>
+				<string>./toggle_fav_city.sh "{query}"</string>
 				<key>scriptargtype</key>
 				<integer>0</integer>
 				<key>scriptfile</key>
@@ -450,7 +499,7 @@
 			<key>type</key>
 			<string>alfred.workflow.action.script</string>
 			<key>uid</key>
-			<string>942CCE71-9883-4AB2-A558-B5A44993DF3B</string>
+			<string>9740FE97-5B7D-4D30-9EF3-5D845C5CA7DC</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
@@ -474,29 +523,6 @@
 			<string>075CB49C-D3B5-4699-9B92-B421D704333D</string>
 			<key>version</key>
 			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>0</integer>
-				<key>script</key>
-				<string>./toggle_fav_city.sh "{query}"</string>
-				<key>scriptargtype</key>
-				<integer>0</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>9740FE97-5B7D-4D30-9EF3-5D845C5CA7DC</string>
-			<key>version</key>
-			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1067,9 +1093,9 @@ v1.0
 		<key>075CB49C-D3B5-4699-9B92-B421D704333D</key>
 		<dict>
 			<key>xpos</key>
-			<real>700</real>
+			<integer>1010</integer>
 			<key>ypos</key>
-			<real>120</real>
+			<integer>260</integer>
 		</dict>
 		<key>16D7BCC0-AD0A-49B7-98F2-5FC3444910B1</key>
 		<dict>
@@ -1116,9 +1142,9 @@ v1.0
 		<key>576752B3-B93B-49C1-8E41-B0E31110799B</key>
 		<dict>
 			<key>xpos</key>
-			<real>700</real>
+			<integer>1010</integer>
 			<key>ypos</key>
-			<real>15</real>
+			<integer>155</integer>
 		</dict>
 		<key>600941C7-2A17-46A0-ABD4-C1568FBA7DBD</key>
 		<dict>
@@ -1165,9 +1191,9 @@ v1.0
 		<key>942CCE71-9883-4AB2-A558-B5A44993DF3B</key>
 		<dict>
 			<key>xpos</key>
-			<real>500</real>
+			<integer>770</integer>
 			<key>ypos</key>
-			<real>15</real>
+			<integer>25</integer>
 		</dict>
 		<key>9740FE97-5B7D-4D30-9EF3-5D845C5CA7DC</key>
 		<dict>
@@ -1242,9 +1268,9 @@ v1.0
 		<key>E9C3767A-C20A-4934-BB66-83416A567C96</key>
 		<dict>
 			<key>xpos</key>
-			<real>895</real>
+			<integer>1205</integer>
 			<key>ypos</key>
-			<real>15</real>
+			<integer>155</integer>
 		</dict>
 		<key>ECAFAB55-5A45-4C0D-9578-3B43945E6B61</key>
 		<dict>
@@ -1259,6 +1285,13 @@ v1.0
 			<real>300</real>
 			<key>ypos</key>
 			<real>15</real>
+		</dict>
+		<key>F4B43EF6-E32D-4988-A7B3-8CC64CC701BA</key>
+		<dict>
+			<key>xpos</key>
+			<integer>550</integer>
+			<key>ypos</key>
+			<integer>115</integer>
 		</dict>
 		<key>F8514F2E-D28D-4DC7-A39C-D2B71716F48C</key>
 		<dict>

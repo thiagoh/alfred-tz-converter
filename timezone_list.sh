@@ -58,16 +58,33 @@ if [ $? -eq 0 ] && [ $timestamp_component_length -gt 8 ]; then
 
     echo "Valid timestamp. ISO 8601 date: $iso_date_val" >> /tmp/alfred.txt
 
-    #Populate Alfred results with Timezones list
-    echo '<?xml version="1.0"?>
-        <items>'
-    echo "<!--$sortkey-->\
-        <item arg=\"$iso_date_val\" valid=\"yes\">\
-            <title>Timestamp to ISO DateTime</title>\
-            <subtitle>$iso_date_val</subtitle>\
-            <icon>./icon.png</icon>\
-        </item>"
-    echo '</items>'
+    cat << EOB
+    {"items": [
+      {
+        "uid": "$sortkey",
+        "title": "Timestamp to ISO DateTime",
+        "subtitle": "Copy to clipboard: $iso_date_val",
+        "arg": "$iso_date_val",
+        "icon": {
+          "path": "icon.png"
+        },
+        "mods": {
+          "alt": {
+            "valid": true,
+            "subtitle": "Copy to clipboard: $iso_date_val"
+          },
+          "cmd": {
+            "valid": true,
+            "subtitle": "Copy to clipboard: $iso_date_val"
+          },
+          "ctrl": {
+            "valid": true,
+            "subtitle": "Copy to clipboard: $iso_date_val"
+          }
+        }
+      }
+    ]}
+EOB
 
     exit
 else
@@ -80,20 +97,37 @@ if [ $? -eq 0 ]; then
 
     echo "Valid ISO date. Timestamp: $timestamp_val" >> /tmp/alfred.txt
 
-    #Populate Alfred results with Timezones list
-    echo '<?xml version="1.0"?>
-        <items>'
-    echo "<!--$sortkey-->\
-        <item arg=\"$timestamp_val\" valid=\"yes\">\
-            <title>ISO DateTime to Timestamp</title>\
-            <subtitle>$timestamp_val</subtitle>\
-            <icon>./icon.png</icon>\
-        </item>"
-    echo '</items>'
+    cat << EOB
+    {"items": [
+      {
+        "uid": "$sortkey",
+        "title": "ISO DateTime to Timestamp",
+        "subtitle": "Copy to clipboard: $timestamp_val",
+        "arg": "$timestamp_val",
+        "icon": {
+          "path": "icon.png"
+        },
+        "mods": {
+          "alt": {
+            "valid": true,
+            "subtitle": "Copy to clipboard: $timestamp_val"
+          },
+          "cmd": {
+            "valid": true,
+            "subtitle": "Copy to clipboard: $timestamp_val"
+          },
+          "ctrl": {
+            "valid": true,
+            "subtitle": "Copy to clipboard: $timestamp_val"
+          }
+        }
+      }
+    ]}
+EOB
 
     exit
 else
-    echo "Not a timestamp. Trying out something else" >> /tmp/alfred.txt
+    echo "Not an ISO date. Trying out something else" >> /tmp/alfred.txt
 fi
 
 
@@ -317,8 +351,7 @@ else
 fi
 
 #Populate Alfred results with Timezones list
-echo '<?xml version="1.0"?>
-    <items>'
+echo '{"items": ['
 
 if [[ "$TIME_FORMAT" = "24h" ]]; then
     TIME_FORMAT_STR='%0k:%M:%S'
@@ -339,13 +372,11 @@ while IFS='|' read -r city country timezone country_code telephone_code favourit
     do
 
     # skip comment line
-    if [[ "$city" =~ ^[[:space:]]*\# ]]
-    then
+    if [[ "$city" =~ ^[[:space:]]*\# ]]; then
         continue
     fi
 
-    if [[ "$favourite" == "0" ]]
-    then
+    if [[ "$favourite" == "0" ]]; then
         favourite_string="⭐️ •"
     else
         favourite_string=""
@@ -355,9 +386,9 @@ while IFS='|' read -r city country timezone country_code telephone_code favourit
     current_timezone_offset=$(TZ=$timezone date +"%z")
     # echo "Current timezone: $timezone / Offset: $current_timezone_offset " >> /tmp/alfred.txt
 
-    if [ "$timezone" = "$timezone_to_convert" ] ; then
+    if [ "$timezone" = "$timezone_to_convert" ]; then
         sourceTimezone_string="👉 "
-    elif [ "$timezone_to_convert_offset" = "$current_timezone_offset" ] ; then
+    elif [ "$timezone_to_convert_offset" = "$current_timezone_offset" ]; then
         sourceTimezone_string="🎯 "
     else
         sourceTimezone_string=""
@@ -388,8 +419,7 @@ while IFS='|' read -r city country timezone country_code telephone_code favourit
 
     # It shall be possible to disable sorting
     # in fact, it means we're assiging an incremaental sort key
-    if [[ ! "$SORTING" == "n" ]]
-    then
+    if [[ ! "$SORTING" == "n" ]]; then
         # we start the output with a sort key to simply pipe the result to 'sort'
         # we sort first by favourite, second by time ascending, third by city name
         sortkey=$favourite$(TZ=$timezone date $setTimeOptionArguments +%Y%m%d%H%M )"$city"
@@ -398,17 +428,41 @@ while IFS='|' read -r city country timezone country_code telephone_code favourit
     fi
 
     ITEM_ARG="$iso_date_val"
+    timestamp_val=$(date -ju -f "%Y-%m-%dT%H:%M:%SZ" "$iso_date_val" +"%s")
 
     if [[ "$city" =~ ${city_search:-.} ]]; then
-        echo "<!--$sortkey-->\
-              <item arg=\"$ITEM_ARG\" valid=\"yes\">\
-                  <title>$sourceTimezone_string$city: $city_time • ${country}</title>\
-                  <subtitle>$favourite_string $city_date • $iso_date_val</subtitle>\
-                  <icon>./flags/$flag_icon</icon>\
-              </item>"
+      item_entry=$(cat << EOB
+            {
+              "uid": "$sortkey",
+              "title": "$sourceTimezone_string$city: $city_time • ${country}",
+              "subtitle": "$favourite_string $city_date • $iso_date_val",
+              "arg": "$ITEM_ARG",
+              "icon": {
+                "path": "./flags/$flag_icon"
+              },
+              "mods": {
+                "alt": {
+                  "valid": true,
+                  "arg": "$timestamp_val",
+                  "subtitle": "$favourite_string $city_date • $timestamp_val"
+                },
+                "cmd": {
+                  "valid": true,
+                  "subtitle": "$favourite_string $city_date • $iso_date_val"
+                },
+                "ctrl": {
+                  "valid": true,
+                  "subtitle": "$favourite_string $city_date • $iso_date_val"
+                }
+              }
+            },
+EOB
+)
+      echo $item_entry
     fi
+
 done < "$timezone_file" | sort
 
-echo '</items>'
+echo "]}"
 
-# exit
+exit

@@ -2,7 +2,7 @@
 <workflow>
   <name>TimeZone Converter</name>
   <version>1.0</version>
-  <bundle>thiagoh.timezoneconverter</bundle>
+  <bundle>thiagoh.alfred-tz-converter</bundle>
   <updated>1557601704</updated>
   <file>timezoneconverter.alfredworkflow</file>
 </workflow>
